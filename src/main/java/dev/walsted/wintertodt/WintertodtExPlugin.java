@@ -321,7 +321,7 @@ public class WintertodtExPlugin extends Plugin
 					closets_brazier = obj;
 				}
 			}
-			if (id == 29315) {
+			if (id == 29311) {
 				var loc = obj.getWorldLocation();
 				if (player_loc.distanceTo(loc) < 10) {
 					closets_root = obj;
