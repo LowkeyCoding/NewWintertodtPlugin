@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 plugins {
 	id 'java'
 }
@@ -23,8 +25,8 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
-version = '1.0-SNAPSHOT'
+group = 'dev.walsted.wintertodt'
+version = ''
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
