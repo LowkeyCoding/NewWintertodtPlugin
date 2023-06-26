@@ -162,4 +162,15 @@ public interface WintertodtExConfig extends Config
 	{
 		return 4;
 	}
+
+	@ConfigItem(
+			position = 10,
+			keyName = "showOverlay2",
+			name = "Highlights",
+			description = "Toggles the brazier, bruma and sprout highlighting"
+	)
+	default boolean showOverlay2()
+	{
+		return true;
+	}
 }

@@ -142,6 +142,9 @@ public class WintertodtExPlugin extends Plugin
 
 	@Getter(AccessLevel.PACKAGE)
 	private GameObject closets_root;
+
+	@Getter(AccessLevel.PACKAGE)
+	private GameObject closets_sprout;
 	private boolean needRoundNotif;
 
 	private Instant lastActionTime;
@@ -249,7 +252,6 @@ public class WintertodtExPlugin extends Plugin
 				lastTickTime = Instant.now();
 			}
 			updateClosestObjects();
-			var player = client.getLocalPlayer();
 			var hp = client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVarbitValue(Varbits.NMZ_ABSORPTION);
 			if (hp <= config.minHP()) {
 				playSound("hp");
@@ -309,9 +311,10 @@ public class WintertodtExPlugin extends Plugin
 		var player_loc = client.getLocalPlayer().getWorldLocation();
 		var brazier = closets_brazier;
 		var root = closets_root;
+		var sprout = closets_sprout;
 		for (GameObject obj : objects) {
 			var id = obj.getId();
-			if (player_loc.distanceTo(brazier.getWorldLocation()) > 10) {
+			if (brazier == null || player_loc.distanceTo(brazier.getWorldLocation()) > 10) {
 				if (id == 32516 || id == 29312 || id == 29314) {
 					var loc = obj.getWorldLocation();
 					if (player_loc.distanceTo(loc) < 10) {
@@ -319,11 +322,20 @@ public class WintertodtExPlugin extends Plugin
 					}
 				}
 			}
-			if (player_loc.distanceTo(root.getWorldLocation()) > 10) {
+			if (root == null || player_loc.distanceTo(root.getWorldLocation()) > 10) {
 				if (id == 29311) {
 					var loc = obj.getWorldLocation();
 					if (player_loc.distanceTo(loc) < 10) {
 						closets_root = obj;
+					}
+				}
+			}
+
+			if (sprout == null || player_loc.distanceTo(sprout.getWorldLocation()) > 20) {
+				if (id == 29315) {
+					var loc = obj.getWorldLocation();
+					if (player_loc.distanceTo(loc) < 20) {
+						closets_sprout = obj;
 					}
 				}
 			}
