@@ -159,9 +159,21 @@ public interface WintertodtExConfig extends Config
 		return Color.GREEN;
 	}
 
-
 	@ConfigItem(
 			position = 10,
+			keyName = "warningHighlightColor",
+			name = "Warning Highlight Color",
+			description = "Color of objects where an interaction is needed"
+	)
+	default Color warningHighlightColor()
+	{
+		return Color.ORANGE;
+	}
+
+
+
+	@ConfigItem(
+			position = 11,
 			keyName = "showOverlay2",
 			name = "Highlights",
 			description = "Toggles the brazier, bruma and sprout highlighting"
@@ -172,7 +184,7 @@ public interface WintertodtExConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 11,
+			position = 12,
 			keyName = "minHP",
 			name = "Min HP",
 			description = "Sets the min hp before sounding an alarm"

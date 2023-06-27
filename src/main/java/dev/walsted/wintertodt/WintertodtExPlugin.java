@@ -88,8 +88,14 @@ import net.runelite.client.util.ColorUtil;
 @Slf4j
 public class WintertodtExPlugin extends Plugin
 {
-	private static final int WINTERTODT_REGION = 6462;
-
+	public static final int WINTERTODT_REGION = 6462;
+	public static final int BROKEN_BRAZIER = 32516;
+	public static final int UNLIT_BRAZIER = 29312;
+	public static final int BRAZIER = 29314;
+	public static final int SNOWFALL = 502;
+	public static final int METEOR = 26690;
+	public static final int BRUMA_ROOTS = 29311;
+	public static final int SPROUTING_ROOTS = 29315;
 	@Inject
 	private Notifier notifier;
 
@@ -274,7 +280,7 @@ public class WintertodtExPlugin extends Plugin
 			var brazier = closets_brazier.getWorldLocation();
 			brazier = brazier.dx(-1);
 			brazier = brazier.dy(-1);
-			if (obj.getId() == 502) {
+			if (obj.getId() == SNOWFALL) {
 				//log.info("Graphic LOC: " + loc + " BA: " + brazier + " DIST: " + loc.distanceTo(brazier));
 				if (loc.distanceTo(brazier) == 0) {
 					//log.info("Snow fall on corner");
@@ -297,7 +303,7 @@ public class WintertodtExPlugin extends Plugin
 			var brazier = closets_brazier.getWorldLocation();
 			brazier = brazier.dx(1);
 			var loc = obj.getWorldLocation();
-			if (obj.getId() == 26690) {
+			if (obj.getId() == METEOR) {
 				//log.info("OBJ LOC: " + loc + " BA: " + brazier + " DIST: " + loc.distanceTo(brazier));
 				if (loc.distanceTo(brazier) == 0) {
 					//log.info("Snow meteor");
@@ -314,16 +320,16 @@ public class WintertodtExPlugin extends Plugin
 		var sprout = closets_sprout;
 		for (GameObject obj : objects) {
 			var id = obj.getId();
-			if (brazier == null || player_loc.distanceTo(brazier.getWorldLocation()) > 10) {
-				if (id == 32516 || id == 29312 || id == 29314) {
+			if (brazier == null || !objects.contains(brazier) || player_loc.distanceTo(brazier.getWorldLocation()) > 10) {
+				if (id == BRAZIER || id == UNLIT_BRAZIER || id == BROKEN_BRAZIER) {
 					var loc = obj.getWorldLocation();
 					if (player_loc.distanceTo(loc) < 10) {
 						closets_brazier = obj;
 					}
 				}
 			}
-			if (root == null || player_loc.distanceTo(root.getWorldLocation()) > 10) {
-				if (id == 29311) {
+			if (root == null || !objects.contains(root) || player_loc.distanceTo(root.getWorldLocation()) > 10) {
+				if (id == BRUMA_ROOTS) {
 					var loc = obj.getWorldLocation();
 					if (player_loc.distanceTo(loc) < 10) {
 						closets_root = obj;
@@ -331,8 +337,8 @@ public class WintertodtExPlugin extends Plugin
 				}
 			}
 
-			if (sprout == null || player_loc.distanceTo(sprout.getWorldLocation()) > 20) {
-				if (id == 29315) {
+			if (sprout == null ||  !objects.contains(sprout) || player_loc.distanceTo(sprout.getWorldLocation()) > 20) {
+				if (id == SPROUTING_ROOTS) {
 					var loc = obj.getWorldLocation();
 					if (player_loc.distanceTo(loc) < 20) {
 						closets_sprout = obj;
