@@ -150,6 +150,29 @@ public interface WintertodtExConfig extends Config
 
 	@ConfigItem(
 			position = 9,
+			keyName = "highlightColor",
+			name = "Highlight Color",
+			description = "Color of brazier, bruma and sprout highlights"
+	)
+	default Color highlightColor()
+	{
+		return Color.GREEN;
+	}
+
+
+	@ConfigItem(
+			position = 10,
+			keyName = "showOverlay2",
+			name = "Highlights",
+			description = "Toggles the brazier, bruma and sprout highlighting"
+	)
+	default boolean showOverlay2()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 11,
 			keyName = "minHP",
 			name = "Min HP",
 			description = "Sets the min hp before sounding an alarm"
@@ -161,16 +184,5 @@ public interface WintertodtExConfig extends Config
 	default int minHP()
 	{
 		return 4;
-	}
-
-	@ConfigItem(
-			position = 10,
-			keyName = "showOverlay2",
-			name = "Highlights",
-			description = "Toggles the brazier, bruma and sprout highlighting"
-	)
-	default boolean showOverlay2()
-	{
-		return true;
 	}
 }

@@ -37,11 +37,11 @@ public class GameObjectOverlay extends OverlayPanel  {
             var root = plugin.getClosets_root();
             var sprout = plugin.getClosets_sprout();
             if (brazier != null)
-                renderGameObjects(graphics, brazier.getClickbox(), new Color(0x00, 0xff, 0x00, 1));
+                renderGameObjects(graphics, brazier.getClickbox(), wintertodtConfig.highlightColor());
             if (root != null)
-                renderGameObjects(graphics, root.getClickbox(), new Color(0x00, 0xff, 0x00, 1));
+                renderGameObjects(graphics, root.getClickbox(), wintertodtConfig.highlightColor());
             if (sprout != null)
-                renderGameObjects(graphics, sprout.getClickbox(), new Color(0x00, 0xff, 0x00, 1));
+                renderGameObjects(graphics, sprout.getClickbox(), wintertodtConfig.highlightColor());
         }
         return super.render(graphics);
     }
