@@ -96,6 +96,7 @@ public class WintertodtExPlugin extends Plugin
 	public static final int METEOR = 26690;
 	public static final int BRUMA_ROOTS = 29311;
 	public static final int SPROUTING_ROOTS = 29315;
+
 	@Inject
 	private Notifier notifier;
 
@@ -155,7 +156,8 @@ public class WintertodtExPlugin extends Plugin
 
 	private Instant lastActionTime;
 
-	private Instant lastTickTime;
+	private Instant eventTimer;
+	private Instant targetTimer;
 
 	private int previousTimerValue;
 
@@ -202,8 +204,9 @@ public class WintertodtExPlugin extends Plugin
 		currentActivity = WintertodtExActivity.IDLE;
 		closets_brazier = null;
 		closets_root = null;
-		lastActionTime = null;
-		lastTickTime = null;
+		targetTimer = null;
+		eventTimer = null;
+		objects.clear();
 	}
 
 	private boolean isInWintertodtRegion()
@@ -214,6 +217,50 @@ public class WintertodtExPlugin extends Plugin
 		}
 
 		return false;
+	}
+
+	public void onEventTimer(){
+		if(eventTimer == null) {
+			eventTimer = Instant.now();
+		}
+
+
+		Duration actionTimeout = Duration.ofMillis(100);
+		var since = Duration.between(eventTimer, Instant.now());
+		if (since.compareTo(actionTimeout) >= 0){
+			if(snowfallBrazierActive && meteorBrazierActive) {
+				playSound("break");
+				snowfallBrazierActive = false;
+				meteorBrazierActive = false;
+				//log.info("broken");
+				eventTimer = Instant.now();
+			}
+
+			if(snowfallBrazierActive) {
+				playSound("unlit");
+				snowfallBrazierActive = false;
+				//log.info("unlit");
+				eventTimer = Instant.now();
+			}
+
+			var hp = client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVarbitValue(Varbits.NMZ_ABSORPTION);
+			if (hp <= config.minHP()) {
+				playSound("hp");
+				eventTimer = Instant.now();
+			}
+		}
+	}
+
+	public void onTargetTimer() {
+		if(targetTimer == null) {
+			targetTimer = Instant.now();
+		}
+
+		Duration actionTimeout = Duration.ofMillis(2000);
+		var since = Duration.between(targetTimer, Instant.now());
+		if (since.compareTo(actionTimeout) >= 0) {
+			updateClosestObjects();
+		}
 	}
 
 	@Subscribe
@@ -237,34 +284,10 @@ public class WintertodtExPlugin extends Plugin
 			log.debug("Entered Wintertodt!");
 			isInWintertodt = true;
 		}
-		if(lastTickTime == null) {
-			lastTickTime = Instant.now();
-		}
-		Duration actionTimeout = Duration.ofMillis(100);
-		var since = Duration.between(lastTickTime, Instant.now());
-		if (since.compareTo(actionTimeout) >= 0){
-			if(snowfallBrazierActive && meteorBrazierActive) {
-				playSound("break");
-				snowfallBrazierActive = false;
-				meteorBrazierActive = false;
-				//log.info("broken");
-				lastTickTime = Instant.now();
-			}
 
-			if(snowfallBrazierActive) {
-				playSound("unlit");
-				snowfallBrazierActive = false;
-				//log.info("unlit");
-				lastTickTime = Instant.now();
-			}
-			updateClosestObjects();
-			var hp = client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVarbitValue(Varbits.NMZ_ABSORPTION);
-			if (hp <= config.minHP()) {
-				playSound("hp");
-				lastTickTime = Instant.now();
-			}
-		}
 
+		onEventTimer();
+		onTargetTimer();
 		checkActionTimeout();
 	}
 
@@ -276,11 +299,12 @@ public class WintertodtExPlugin extends Plugin
 	public void onGraphicsObjectCreated(GraphicsObjectCreated object) {
 		var obj = object.getGraphicsObject();
 		var loc = WorldPoint.fromLocal(client, obj.getLocation());
-		if (closets_brazier != null) {
+		if (obj.getId() == SNOWFALL) {
+			if (closets_brazier != null) {
 			var brazier = closets_brazier.getWorldLocation();
 			brazier = brazier.dx(-1);
 			brazier = brazier.dy(-1);
-			if (obj.getId() == SNOWFALL) {
+
 				//log.info("Graphic LOC: " + loc + " BA: " + brazier + " DIST: " + loc.distanceTo(brazier));
 				if (loc.distanceTo(brazier) == 0) {
 					//log.info("Snow fall on corner");
@@ -290,16 +314,21 @@ public class WintertodtExPlugin extends Plugin
 		}
 	}
 	// x=1638, y=3997 without
-
+	public boolean isTracked(int id) {
+		return id == BRAZIER || id == UNLIT_BRAZIER || id == BROKEN_BRAZIER || id == BRUMA_ROOTS || id == SPROUTING_ROOTS;
+	}
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned object) {
-		objects.remove(object.getGameObject());
+		if(isTracked(object.getGameObject().getId()))
+			objects.remove(object.getGameObject());
 	}
 	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned object) {
-		objects.add(object.getGameObject());
 		var obj = object.getGameObject();
-		if (closets_brazier != null) {
+		var id = obj.getId();
+		if(isTracked(id))
+			objects.add(object.getGameObject());
+		if (closets_brazier != null && obj.getId() == METEOR) {
 			var brazier = closets_brazier.getWorldLocation();
 			brazier = brazier.dx(1);
 			var loc = obj.getWorldLocation();
